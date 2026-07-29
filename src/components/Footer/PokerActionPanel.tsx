@@ -49,6 +49,7 @@ import {
 // Import utils
 import { getActionByType } from "../../utils/actionUtils";
 import { getRaiseToAmount } from "../../utils/raiseUtils";
+import { getViewportMode } from "../../config/stageGeometry";
 
 // Import sub-components
 import { ActionButton } from "./ActionButton";
@@ -101,11 +102,11 @@ export const PokerActionPanel: React.FC<PokerActionPanelProps> = ({ tableId, net
     const { playActionSound } = useActionSounds();
 
     // Detect mobile landscape orientation
-    const [isMobileLandscape, setIsMobileLandscape] = useState(window.innerWidth <= 926 && window.innerWidth > window.innerHeight);
+    const [isMobileLandscape, setIsMobileLandscape] = useState(getViewportMode() === "mobile-landscape");
 
     useEffect(() => {
         const checkOrientation = () => {
-            setIsMobileLandscape(window.innerWidth <= 926 && window.innerWidth > window.innerHeight);
+            setIsMobileLandscape(getViewportMode() === "mobile-landscape");
         };
 
         window.addEventListener("resize", checkOrientation);
