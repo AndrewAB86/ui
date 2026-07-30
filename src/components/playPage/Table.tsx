@@ -943,9 +943,7 @@ const Table = React.memo(() => {
 
     // Optimize window width detection - only check on resize
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 414);
-    const [isMobileLandscape, setIsMobileLandscape] = useState(
-        window.innerWidth <= 1024 && window.innerWidth > window.innerHeight && window.innerHeight <= 600
-    );
+    const [isMobileLandscape, setIsMobileLandscape] = useState(getViewportMode() === "mobile-landscape");
     const envTableStyle = import.meta.env.VITE_TABLE_STYLE;
     const defaultTableStyle: "modern" | "classic" | "nouns" = envTableStyle === "classic" || envTableStyle === "nouns" ? envTableStyle : "modern";
     const [tableStyle, setTableStyle] = useState<"modern" | "classic" | "nouns">(defaultTableStyle);
@@ -955,7 +953,7 @@ const Table = React.memo(() => {
         const handleResize = () => {
             setViewportMode(getViewportMode());
             setIsMobile(window.innerWidth <= 414);
-            setIsMobileLandscape(window.innerWidth <= 1024 && window.innerWidth > window.innerHeight && window.innerHeight <= 600);
+            setIsMobileLandscape(getViewportMode() === "mobile-landscape");
         };
 
         window.addEventListener("resize", handleResize);
