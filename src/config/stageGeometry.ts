@@ -504,9 +504,13 @@ export function getViewportMode(): ViewportMode {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const isLandscape = width > height;
+    const isCoarsePointer =
+        typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+    const isCompactTouchLandscape = isLandscape && isCoarsePointer && width <= 1700 && height <= 900;
 
     if (width <= 414 && !isLandscape) return "mobile-portrait";
     if (width <= 926 && isLandscape) return "mobile-landscape";
+    if (isCompactTouchLandscape) return "mobile-landscape";
     if (width <= 1024) return "tablet";
     return "desktop";
 }
