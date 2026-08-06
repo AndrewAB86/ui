@@ -506,11 +506,18 @@ export function getViewportMode(): ViewportMode {
     const isLandscape = width > height;
     const isCoarsePointer =
         typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
-    const isCompactTouchLandscape = isLandscape && isCoarsePointer && width <= 1700 && height <= 900;
 
-    if (width <= 414 && !isLandscape) return "mobile-portrait";
-    if (width <= 926 && isLandscape) return "mobile-landscape";
+    // Portrait: use aspect ratio + coarse pointer instead of a fixed pixel threshold.
+    // This catches large phones (iPhone 14 Pro Max = 430px, Galaxy S24 = 412px,
+    // Pixel Fold inner screen = 608px tall in portrait, etc.) reliably.
+    if (!isLandscape && isCoarsePointer) return "mobile-portrait";
+
+    // Landscape touch devices up to 1700×900 CSS px — covers regular phones,
+    // large Android flagships, and foldables (e.g. Galaxy Z Fold outer = 904px wide,
+    // Pixel Fold inner = 1080px wide, future iPhone Fold ≈ 1100px wide in landscape).
+    const isCompactTouchLandscape = isLandscape && isCoarsePointer && width <= 1700 && height <= 900;
     if (isCompactTouchLandscape) return "mobile-landscape";
+
     if (width <= 1024) return "tablet";
     return "desktop";
 }
