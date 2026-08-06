@@ -48,16 +48,43 @@ export const useTableLayout = (
         refreshLayout();
 
         const handleResize = () => refreshLayout();
+        // orientationchange fires before the browser has updated innerWidth/innerHeight,
+        // so we delay slightly to read the post-rotation dimensions.
         const handleOrientationChange = () => setTimeout(refreshLayout, 100);
 
         window.addEventListener("resize", handleResize);
         window.addEventListener("orientationchange", handleOrientationChange);
 
+        // visualViewport fires for mobile pinch-zoom and browser-chrome show/hide
+        // (address bar appearing/disappearing) that window.resize misses.
+        const vv = window.visualViewport;
+        if (vv) {
+            vv.addEventListener("resize", handleResize);
+            vv.addEventListener("scroll", handleResize);
+        }
+
         return () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("orientationchange", handleOrientationChange);
+            if (vv) {
+                vv.removeEventListener("resize", handleResize);
+                vv.removeEventListener("scroll", handleResize);
+            }
         };
     }, [refreshLayout]);
+
+    // ResizeObserver on the container catches size changes that window.resize
+    // misses: soft keyboard appearing, browser chrome toggling, foldable hinge
+    // state changes (inner ↔ outer screen, half-open posture).
+    useLayoutEffect(() => {
+        const el = containerRef?.current;
+        if (!el) return;
+
+        const observer = new ResizeObserver(() => refreshLayout());
+        observer.observe(el);
+
+        return () => observer.disconnect();
+    }, [containerRef, refreshLayout]);
 
     const positions = useMemo(() => getAllPositions(tableSize), [tableSize]);
 
