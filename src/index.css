@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent white background bleed on mobile, foldables, and notched devices.
+   The app always renders on a dark background; white edges appear when the
+   browser safe-area or OS chrome extends past the app's own containers. */
+html,
+body,
+#app {
+    background-color: #000;
+    /* Fill the entire screen including safe-areas (notches, rounded corners,
+       foldable hinge bars) so no white gap is ever visible. */
+    margin: 0;
+    padding: 0;
+    min-height: 100dvh;
+    min-width: 100%;
+    overflow-x: hidden;
+}
