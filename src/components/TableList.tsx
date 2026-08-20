@@ -131,9 +131,9 @@ const TableList: React.FC = () => {
     }, [games]);
 
     // Use environment variables for club branding
-    // Defaults to poker.svg icon for table listings (appropriate for poker context)
+    // Defaults to the repository-owned Texas HODL logo for table listings
     // Clubs can override by setting VITE_CLUB_LOGO and VITE_CLUB_NAME in .env
-    const clubLogo = import.meta.env.VITE_CLUB_LOGO || "/poker.svg";
+    const clubLogo = import.meta.env.VITE_CLUB_LOGO || "/texas-hodl-logo.png";
     const clubName = import.meta.env.VITE_CLUB_NAME || "Texas Hodl";
 
     // Copy to clipboard utility with error handling
@@ -334,7 +334,7 @@ const TableList: React.FC = () => {
                                     <tr key={game.gameId} className="hover:bg-gray-700/50 transition-colors">
                                         <td className="px-4 py-4">
                                             <div className="flex items-center justify-center gap-2">
-                                                <img src={clubLogo} alt={clubName} className="w-6 h-6 object-contain" />
+                                                <img src={clubLogo} alt={clubName} className="w-6 h-6 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "/texas-hodl-logo.png"; }} />
                                                 <span className="text-white">{clubName}</span>
                                             </div>
                                         </td>
