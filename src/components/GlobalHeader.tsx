@@ -17,21 +17,13 @@ interface MenuItem {
 }
 
 // Logo component with error handling - uses VITE_CLUB_LOGO env variable
-// Falls back to /logo1080.png if not set, then to text if image fails
+// Falls back to the repository-owned Texas HODL logo if the configured image is unavailable
 // Memoized to prevent unnecessary re-renders
 const LogoComponent: React.FC = React.memo(() => {
     const [imageError, setImageError] = useState(false);
     const clubLogo = import.meta.env.VITE_CLUB_LOGO;
     const clubName = import.meta.env.VITE_CLUB_NAME || "Block 52";
-    const logoSrc = clubLogo || "/logo1080.png";
-
-    if (imageError) {
-        return (
-            <span className={`text-xl font-bold ${styles.logoFallback}`}>
-                {clubName}
-            </span>
-        );
-    }
+    const logoSrc = imageError || !clubLogo ? "/texas-hodl-logo.png" : clubLogo;
 
     return (
         <img
