@@ -1,36 +1,47 @@
 import { useEffect } from "react";
 
+const FALLBACK_FAVICON = "/texas-hodl-logo.png";
+
+function applyFavicon(url: string) {
+    const links = document.querySelectorAll("link[rel*=\"icon\"]");
+    links.forEach((link) => {
+        (link as HTMLLinkElement).href = url;
+    });
+
+    const appleTouchIcon = document.querySelector("link[rel=\"apple-touch-icon\"]") as HTMLLinkElement;
+    if (appleTouchIcon) appleTouchIcon.href = url;
+
+    const maskIcon = document.querySelector("link[rel=\"mask-icon\"]") as HTMLLinkElement;
+    if (maskIcon) maskIcon.href = url;
+}
+
 /**
- * Component that dynamically sets the favicon based on environment variables
- * This component should be included once in the app root
+ * Sets the document title and favicon from build-time branding.
+ * The repository-owned Texas HODL asset is applied first and remains in place
+ * whenever a configured remote or deployment-specific image cannot be loaded.
  */
 const FaviconSetter: React.FC = () => {
     useEffect(() => {
-        const appTitle = import.meta.env.VITE_APP_TITLE || "Block 52";
+        const appTitle = import.meta.env.VITE_APP_TITLE || "Texas HODL";
         document.title = appTitle;
 
-        const faviconUrl = import.meta.env.VITE_FAVICON_URL || "/b52favicon.svg";
-        
-        // Update all favicon links
-        const links = document.querySelectorAll("link[rel*=\"icon\"]");
-        links.forEach((link) => {
-            const linkElement = link as HTMLLinkElement;
-            linkElement.href = faviconUrl;
-        });
-        
-        // Also update apple-touch-icon and mask-icon if they exist
-        const appleTouchIcon = document.querySelector("link[rel=\"apple-touch-icon\"]") as HTMLLinkElement;
-        if (appleTouchIcon) {
-            appleTouchIcon.href = faviconUrl;
-        }
-        
-        const maskIcon = document.querySelector("link[rel=\"mask-icon\"]") as HTMLLinkElement;
-        if (maskIcon) {
-            maskIcon.href = faviconUrl;
-        }
+        const configuredFavicon = import.meta.env.VITE_FAVICON_URL;
+        applyFavicon(FALLBACK_FAVICON);
+
+        if (!configuredFavicon || configuredFavicon === FALLBACK_FAVICON) return;
+
+        let active = true;
+        const image = new Image();
+        image.onload = () => {
+            if (active) applyFavicon(configuredFavicon);
+        };
+        image.src = configuredFavicon;
+
+        return () => {
+            active = false;
+        };
     }, []);
 
-    // This component doesn't render anything visible
     return null;
 };
 
